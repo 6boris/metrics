@@ -1,4 +1,4 @@
-package gin_exporter
+package gin_metrics
 
 import (
 	"fmt"

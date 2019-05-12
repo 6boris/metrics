@@ -1,4 +1,4 @@
-module github.com/kylesliu/gin_exporter
+module github.com/kylesliu/gin_metrics
 
 go 1.12
 

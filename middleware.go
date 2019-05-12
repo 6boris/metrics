@@ -1,1 +1,1 @@
-package gin_exporter
+package gin_metrics
