@@ -1,20 +1,19 @@
 package gin_metrics
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net/http"
-	"time"
 )
 
 var (
-	taskCounter = prometheus.NewCounter(prometheus.CounterOpts{
-		Subsystem: "workpool",
-		Name:      "complete_task_total",
-		Help:      "Total number of task completed",
-	})
+	GinRequestTotalCount = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "gin_reqeust_total",
+			Help: "Number of hello requests in total",
+		},
+		[]string{"method", "path"},
+	)
 )
 
 type GinRoutesInfo struct {
@@ -26,49 +25,31 @@ type GinRoutesInfo struct {
 var routeInfo []GinRoutesInfo
 
 func init() {
-	prometheus.MustRegister(taskCounter)
+	//prometheus.MustRegister(taskCounter)
+	prometheus.MustRegister(GinRequestTotalCount)
+	//prometheus.MustRegister(respTime)
+	//prometheus.MustRegister(respSum)
 }
 
-func Default(app *gin.Engine) *gin.Engine {
+func Default(app *gin.Engine) {
 	app.Use(metricsMiddleware)
-
-	metricsHandler(app)
+	app.GET("metrics", metricsHandler())
+	//app.GET("metrics.json", metricsHandlerJson)
 	generateRouteInfo(app)
-	return app
 }
 
-func metricsMiddleware(c *gin.Context) {
-	//path := c.Request.URL.Path
-	start := time.Now()
-	c.Next()
-	taskCounter.Add(1)
-	//fmt.Println(c.ClientIP(), c.Request.URL.Path, start.Sub(time.Now()))
-	fmt.Println(time.Now().Sub(start))
-	return
-}
-
-//	metrics 接口
-func metricsHandler(app *gin.Engine) {
-
-	app.GET("metrics", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"code":   200,
-			"msg":    "metrics",
-			"routes": routeInfo,
-		})
-	})
-
-	//go func() {
-	//	for {
-	//		taskCounter.Add(1)
-	//		time.Sleep(1 * time.Second)
-	//	}
-	//}()
-
-	http.Handle("/metrics", promhttp.Handler())
-	if err := http.ListenAndServe(":8888", nil); err != nil {
-		panic(err)
+//	Gin Metrics api handler
+func metricsHandler() gin.HandlerFunc {
+	h := promhttp.Handler()
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
 	}
+}
+
+func metricsHandlerJson(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"metrics": routeInfo,
+	})
 }
 
 // 初始化 Router信息
