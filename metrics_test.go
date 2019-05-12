@@ -36,9 +36,9 @@ func TestDefault(t *testing.T) {
 		})
 	}
 
-	if err := app.Run("127.0.0.1:9000"); err != nil {
-		panic(err.Error())
-	}
+	//if err := app.Run("127.0.0.1:9000"); err != nil {
+	//	panic(err.Error())
+	//}
 }
 
 func BenchmarkDefault(b *testing.B) {
