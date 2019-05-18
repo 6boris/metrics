@@ -36,13 +36,13 @@ func TestDefault(t *testing.T) {
 		})
 	}
 
-	//if err := app.Run("127.0.0.1:9000"); err != nil {
-	//	panic(err.Error())
-	//}
+	if err := app.Run("127.0.0.1:9000"); err != nil {
+		panic(err.Error())
+	}
 }
 
 func BenchmarkDefault(b *testing.B) {
-	b.N = 10000
+	b.N = 1000
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -55,7 +55,7 @@ func BenchmarkDefault(b *testing.B) {
 			}
 		}()
 	}
-
+	//
 	go func() {
 		for i := 0; i < b.N; i++ {
 			Req("http://127.0.0.1:9000/rand_sleep")
@@ -67,7 +67,7 @@ func BenchmarkDefault(b *testing.B) {
 		}
 	}()
 	time.Sleep(10 * time.Second)
-	//wg.Wait()
+	wg.Wait()
 
 }
 
@@ -84,7 +84,7 @@ func getRandomString(str_len int) string {
 }
 
 func Req(url string) {
-	time.Sleep(time.Duration(time.Duration(rand.Intn(100)) * time.Millisecond))
+	time.Sleep(time.Duration(time.Duration(rand.Intn(1000)) * time.Millisecond))
 
 	resp, err := http.Get(url)
 	if err != nil {
