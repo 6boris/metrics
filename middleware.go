@@ -1,6 +1,5 @@
-package gin_metrics
+package ginMetrics
 
-import "C"
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
