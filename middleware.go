@@ -26,7 +26,7 @@ func metricsMiddleware(c *gin.Context) {
 	//
 	end := time.Now().UnixNano()
 	use_time := end - start
-	GinRequestSummary.With(prometheus.Labels{"method": c.Request.Method, "endpoint": c.Request.URL.Path}).Observe(float64(use_time))
+	GinRequestSummary.With(prometheus.Labels{"method": c.Request.Method, "endpoint": c.FullPath()}).Observe(float64(use_time))
 
 	//use_time := float64(end / 1e6)
 	//fmt.Println((end - start) / 1e6)
