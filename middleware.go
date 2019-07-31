@@ -1,7 +1,6 @@
 package ginMetrics
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"time"
@@ -11,7 +10,8 @@ func metricsMiddleware(c *gin.Context) {
 	start := time.Now().UnixNano()
 
 	//	Request time
-	GinRequestTotalCount.With(prometheus.Labels{"method": c.Request.Method, "endpoint": c.FullPath()}).Inc()
+	GinRequestTotalCount.With(prometheus.Labels{"method": c.Request.Method, "endpoint": c.Request.URL.Path}).Inc()
+	//GinRequestTotalCount.With(prometheus.Labels{"method": c.Request.Method, "endpoint": c.FullPath()}).Inc()
 
 	//GinRequestGauge.With(prometheus.Labels{"method": c.Request.Method, "path": c.Request.URL.Path}).
 	//fmt.Println(time.Now().UnixNano() - start)
@@ -28,7 +28,7 @@ func metricsMiddleware(c *gin.Context) {
 	end := time.Now().UnixNano()
 	use_time := end - start
 	GinRequestSummary.With(prometheus.Labels{"method": c.Request.Method, "endpoint": c.FullPath()}).Observe(float64(use_time))
-	fmt.Println(c.FullPath())
+	//fmt.Println(c.FullPath())
 
 	//use_time := float64(end / 1e6)
 	//fmt.Println((end - start) / 1e6)
